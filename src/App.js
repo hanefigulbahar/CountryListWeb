@@ -3,15 +3,16 @@ import { useEffect, useState } from "react";
 import AlertBox from "./Companent/Alert";
 import LoadingSpinner from "./Companent/Spinner"
 import "./index.css"
+import CountryList from "./Companent/Table";
 
 function App() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   function getAllData() {
     setIsLoading(true)
-    setErrorMessage(false)
+    setIsError(false)
     CountryAPI
       .getAll()
       .then(function (response) {
@@ -19,8 +20,8 @@ function App() {
         setIsLoading(false);
       })
       .catch(function (error) {
-        console.log(error)
         setIsLoading(false);
+        setIsError(true);
       });
   }
 
@@ -28,8 +29,9 @@ function App() {
     getAllData();
   }, []);
 
-  function getSearchedData(searchKey) {
-    setErrorMessage(false);
+  function getSearchedData(event) {
+    const searchKey = event.target.value
+    setIsError(false);
     if (searchKey !== "") {
       CountryAPI
         .getCapital(searchKey)
@@ -37,40 +39,20 @@ function App() {
           setData(response.data);
         })
         .catch(function (error) {
-          setErrorMessage(true)
+          setIsError(true)
+          setData([]);
         })
     }
   };
 
-  const countryList = (
-    <div className="container">
-      <input className="search-bar" type="text" placeholder="Search Capital" onChange={e => getSearchedData(e.target.value.trim())} />
-      <table className="table table-bordered text-center">
-        <thead className="table-active text-muted">
-          <tr>
-            <th scope="col">Flag</th>
-            <th scope="col">Name</th>
-            <th scope="col">Capital</th>
-            <th scope="col">Region</th>
-          </tr>
-        </thead>
-        {data.map(repo =>
-          <tbody key={repo.name}>
-            <tr>
-              <td><img src={repo.flag} style={{ width: "200px" }} alt="" /></td>
-              <td>{repo.name}</td>
-              <td>{repo.capital}</td>
-              <td>{repo.region}</td>
-            </tr>
-          </tbody>)}
-      </table>
-    </div>
-  )
+const table = CountryList(data,getSearchedData)
+
+  
 
   return (
     <div className="App">
-      {errorMessage ? <AlertBox /> : null}
-      {isLoading ? <LoadingSpinner /> : countryList}
+      {isError ? <AlertBox /> : null}
+      {isLoading ? <LoadingSpinner /> : table}
     </div>
   );
 }

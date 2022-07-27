@@ -22,11 +22,13 @@
     border-radius: .4rem;
 }
 
+
 .alert {
-    position: absolute;
+    position:absolute;
     text-align: center;
     font-size: 30px;
-    margin: 2rem 2rem;
+    width: 50%;
+    margin: 14rem 16rem;
 }
 
 .table {
