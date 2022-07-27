@@ -1,7 +1,7 @@
-import axios from "axios";
+import { CountryAPI } from "./API/CountryAPI";
 import { useEffect, useState } from "react";
 import AlertBox from "./Companent/Alert";
-import LoadingSpinner from "./Companent/Spinner/Spinner"
+import LoadingSpinner from "./Companent/Spinner"
 import "./index.css"
 
 function App() {
@@ -9,37 +9,42 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
 
-  useEffect(() => {
+  function getAllData() {
     setIsLoading(true)
-    const fetchData = async () => {
-      const response = await axios.get("https://restcountries.com/v2/all");
-      setData(response.data)
-      setIsLoading(false)
-    }
-    fetchData();
+    setErrorMessage(false)
+    CountryAPI
+      .getAll()
+      .then(function (response) {
+        setData(response.data);
+        setIsLoading(false);
+      })
+      .catch(function (error) {
+        console.log(error)
+        setIsLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    getAllData();
   }, []);
 
-  const searchData = async (e) => {
-    setErrorMessage(false)
-    try {
-      const response = await axios.get("https://restcountries.com/v2/capital/" + e);
-      setData(response.data)
-    } catch (err) {
-      setErrorMessage(true);
-      setData([]);
-      setIsLoading(false);
+  function getSearchedData(searchKey) {
+    setErrorMessage(false);
+    if (searchKey !== "") {
+      CountryAPI
+        .getCapital(searchKey)
+        .then(function (response) {
+          setData(response.data);
+        })
+        .catch(function (error) {
+          setErrorMessage(true)
+        })
     }
-  }
-
-  function getData(key) {
-    if (key !== ""){
-      searchData(key)
-    }
-  }
+  };
 
   const countryList = (
     <div className="container">
-      <input className="search-bar" type="text" placeholder="Search Capital" onChange={e => getData(e.target.value.trim())} />
+      <input className="search-bar" type="text" placeholder="Search Capital" onChange={e => getSearchedData(e.target.value.trim())} />
       <table className="table table-bordered text-center">
         <thead className="table-active text-muted">
           <tr>
@@ -64,8 +69,8 @@ function App() {
 
   return (
     <div className="App">
-      {errorMessage ? <AlertBox/> : null}
-        {isLoading ? <LoadingSpinner /> : countryList}
+      {errorMessage ? <AlertBox /> : null}
+      {isLoading ? <LoadingSpinner /> : countryList}
     </div>
   );
 }
