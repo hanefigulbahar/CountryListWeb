@@ -1,7 +1,10 @@
-export default function CountryList(countreis, handleChange) {
+export default function CountryList({data, setSearchKey}) {
+
     return (
     <div className="container">
-      <input className="search-bar" type="text" placeholder="Search Capital" onChange={handleChange} />
+      <form>
+      <input className="search-bar" type="text" placeholder="Search Capital" onChange={(event) => setSearchKey(event.target.value)} />
+      </form>
       <table className="table table-bordered text-center">
         <thead className="table-active text-muted">
           <tr>
@@ -11,7 +14,7 @@ export default function CountryList(countreis, handleChange) {
             <th scope="col">Region</th>
           </tr>
         </thead>
-        {countreis.map(repo =>
+        {data.map(repo =>
           <tbody key={repo.name}>
             <tr>
               <td><img src={repo.flag} style={{ width: "200px" }} alt="" /></td>

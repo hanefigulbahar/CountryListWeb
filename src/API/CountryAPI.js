@@ -10,8 +10,8 @@ export const CountryAPI = {
             url: `/all`
         });
     },
-    getCapital: function (capital) {
-        return baseURL.request({
+    getCapital:async function (capital) {
+        return await baseURL.request({
             method:"GET",
             url: `/capital/${capital}`
         })

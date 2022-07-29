@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import AlertBox from "./Companent/Alert";
 import LoadingSpinner from "./Companent/Spinner"
 import "./index.css"
-import CountryList from "./Companent/Table";
+import CountryList from "./Companent/CountryList";
 
 function App() {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [searchKey, setSearchKey ]= useState("");
 
   function getAllData() {
     setIsLoading(true)
@@ -29,8 +30,7 @@ function App() {
     getAllData();
   }, []);
 
-  function getSearchedData(event) {
-    const searchKey = event.target.value
+  function getSearchedData(searchKey) {
     setIsError(false);
     if (searchKey !== "") {
       CountryAPI
@@ -45,14 +45,16 @@ function App() {
     }
   };
 
-const table = CountryList(data,getSearchedData)
+  useEffect(() => {
+    getSearchedData(searchKey);
+  } , [searchKey]);
 
   
 
   return (
     <div className="App">
+      {isLoading ? <LoadingSpinner /> : <CountryList data={data} setSearchKey={setSearchKey} />}
       {isError ? <AlertBox /> : null}
-      {isLoading ? <LoadingSpinner /> : table}
     </div>
   );
 }
